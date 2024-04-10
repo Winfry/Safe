@@ -1,7 +1,5 @@
 import streamlit as st
 from dotenv import load_dotenv
-from dotenv import load_dotenv,find_dotenv
-load_dotenv(find_dotenv())
 import pickle
 from PyPDF2 import PdfReader
 from streamlit_extras.add_vertical_space import add_vertical_space
@@ -13,16 +11,15 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.callbacks import get_openai_callback
 import os
 
-
 # Sidebar contents
 with st.sidebar:
-    st.title('Your Safety Guide:')
+    st.title('Common questions asked for safety:')
   
     # Path to your image file
-    image_path = "Safe.jpg"
+    image_path = "image.jpg"
 
     # Display the image
-    st.image(image_path, caption='Helping You Navigate your Safety ', use_column_width=True)
+    st.image(image_path, caption='Helping Pregnant women', use_column_width=True)
     st.markdown('''
     ## About
     This app is an LLM-powered chatbot built using:
@@ -30,7 +27,7 @@ with st.sidebar:
     - [LangChain](https://python.langchain.com/)
     - [OpenAI](https://platform.openai.com/docs/models) LLM model
                 
-   
+    Built by [Amos-Kibet](https://www.linkedin.com/in/amos-kibet-107249230/)
     ''')
 
 
@@ -39,23 +36,15 @@ with st.sidebar:
 load_dotenv()
 
 # Retrieve the OpenAI API key from the environment
-import os
-
-# Set the environment variable
-os.environ["OPENAI_API_KEY"] = "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"
-
-
-openai_api_key = os.getenv('OPEN_API_KEY')
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
 # Set the OpenAI API key
-os.environ["OPENAI_API_KEY"] = "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"
-
-
+os.environ["OPENAI_API_KEY"] = openai_api_key
 def main():
-    st.header("Safety Chatbot💬")
+    st.header("Pregnancy Chatbot💬")
 
     # Get the file path from the user
-    file_path = "BeSafeAI-Dataset.pdf"
+    file_path = "Common-Questions-in-Pregnancy-pdf.pdf"
 
     # Check if a file path is provided
     if file_path:
@@ -86,3 +75,38 @@ def main():
                 VectorStore = FAISS.from_texts(chunks, embedding=embeddings)
                 with open(f"{store_name}.pkl", "wb") as f:
                     pickle.dump(VectorStore, f)
+
+
+        # Initialize the chat messages history
+        if "messages" not in st.session_state.keys():
+            st.session_state.messages = [{"role": "assistant", "content": "Hello. How can I help?"}]
+
+        # Prompt for user input and save
+        if prompt := st.chat_input():
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            docs = VectorStore.similarity_search(query=prompt, k=3)
+
+        # display the existing chat messages
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+
+        # If last message is not from assistant, we need to generate a new response
+        if st.session_state.messages[-1]["role"] != "assistant":
+            # Call LLM
+            with st.chat_message("assistant"):
+                with st.spinner("Thinking..."):
+                    llm = OpenAI()
+                    chain = load_qa_chain(llm=llm, chain_type="stuff")
+                    with get_openai_callback() as cb:
+                        response = chain.run(input_documents=docs, question=prompt)
+
+                    r = response
+                    response = r
+                    st.write(response)
+
+            message = {"role": "assistant", "content": response}
+            st.session_state.messages.append(message)
+
+if __name__ == '__main__':
+    main()
