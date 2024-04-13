@@ -37,7 +37,7 @@ with st.sidebar:
 
 # Load environment variables from a .env file if present
 _ = load_dotenv(find_dotenv())
-
+   
 # Retrieve the OpenAI API key from the environment
 os.environ["OPENAI_API_KEY"] = "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"
 
