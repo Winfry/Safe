@@ -6,17 +6,17 @@ os.environ["OPENAI_API_KEY"] = "your_api_key"
 
 
 import os
-openai_api_key = ("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")
+openai_api_key = ("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")
 
 # Ensure openai_api_key is a string
 if isinstance(openai_api_key, str):
     # Set the environment variable
-    openai_api_key = ("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")
+    openai_api_key = ("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")
 
 else:
     print("Error: OPENAI_API_KEY must be a string.")
 
-openai_api_key = os.getenv("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")
+openai_api_key = os.getenv("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")
 
 # Check if the environment variable is set
 if "OPENAI_API_KEY" in os.environ:
@@ -25,7 +25,7 @@ if "OPENAI_API_KEY" in os.environ:
     # Ensure openai_api_key is a string
     if isinstance(openai_api_key, str):
         # Set the environment variable
-        os.environ["OPENAI_API_KEY"] = "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"
+        os.environ["OPENAI_API_KEY"] = "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"
     else:
         print("Error: OPENAI_API_KEY must be a string.")
 else:
@@ -35,4 +35,4 @@ else:
 import os
 
 # Set the environment variable
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "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"
